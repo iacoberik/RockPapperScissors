@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <style>
+        .content {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-text {
+            font-size: 24px;
+            font-weight: 600;
+
+            transform: translateX(-20%);
+            transition: cubic-bezier(0.5, 1, 0.12, 1) 1s;
+        }
+
+        .active {
+            transform: translateX(0%);
+        }
+    </style>
+    <main>
+        <div class="content">
+            <div class="selections">
+                <button id="selection">Rock</button>
+                <button id="selection">Papper</button>
+                <button id="selection">Scissors</button>
+                <button id="reset">Reset Score</button>
+            </div>
+            <div class="score-board" id="score-board">
+                <p>Player wins: 0</br> Computer wins: 0</br> Draws: 0</p>
+            </div>
+        </div>
+        <div class="banner">
+            <p class="info-text" id="winner-text"></p>
+        </div>
+    </main>
+</body>
+<script>
+    const buttons = document.querySelectorAll('button#selection');
+    const resetButton = document.querySelector('#reset')
+    const winnerTextContent = document.querySelector('p#winner-text');
+    const scoreDash = document.querySelector('#score-board');
+
+    const rules = {
+        rock: 'scissors',
+        papper: 'rock',
+        scissors: 'papper'
+    };
+
+    const scoreBoard = {
+        player: 0,
+        computer: 0,
+        draw: 0,
+        total: 0
+    }
+
+    function randomNumber(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min)
+    };
+
+    function resetScore() {
+        scoreBoard.player = 0;
+        scoreBoard.computer = 0;
+        scoreBoard.draw = 0;
+        scoreBoard.total = 0;
+        updateScoreDash()
+    }
+
+    function removeTransition(e) {
+        this.classList.remove('active');
+        buttons.forEach(button => button.disabled = false)
+        updateScoreDash()
+    };
+
+    function updateScoreDash() {
+        scoreDash.innerHTML = `<p>Player wins: ${scoreBoard.player}</br> Computer wins: ${scoreBoard.computer}</br> Draws: ${scoreBoard.draw}</br>Total: ${scoreBoard.total}</p>`
+    }
+
+    function updateScoreBoard(winner) {
+        scoreBoard[winner]++;
+        scoreBoard.total++
+    }
+
+    function winnerAlert(winner) {
+        updateScoreBoard(winner.split(' ')[0].toLowerCase())
+        winnerTextContent.textContent = winner;
+        winnerTextContent.classList.add('active')
+    };
+
+    function play() {
+        buttons.forEach(button => button.disabled = true)
+        const pcSelection = Object.keys(rules)[randomNumber(0, 2)];
+        const playerSelection = this.textContent.toLowerCase();
+        rules[playerSelection] == pcSelection ? winnerAlert('Player wins') : rules[pcSelection] == playerSelection ? winnerAlert('Computer wins') : winnerAlert('Draw');
+    };
+
+    buttons.forEach(button => {
+        button.onclick = play
+    });
+
+    resetButton.onclick = resetScore
+    winnerTextContent.ontransitionend = removeTransition
+</script>
+
+</html>
